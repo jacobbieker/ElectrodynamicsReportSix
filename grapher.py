@@ -18,23 +18,31 @@ for dataset in files[0][2]:
         for line in spamreader:
             count += 1
             if count != 1 and line != []:
-                data_air[file_count][0].append([line[0]])
-                data_air[file_count][1].append([line[1]])
-                data_air[file_count][2].append([line[2]])
-                data_air[file_count][3].append([line[3]])
-                data_air[file_count][4].append([line[4]])
-                data_air[file_count][5].append([line[5]])
-                data_air[file_count][6].append([line[6]])
-                data_air[file_count][7].append([line[7]])
-                data_air[file_count][10].append([line[10]])
+                data_air[file_count][0].append(line[0])
+                data_air[file_count][1].append(line[1])
+                data_air[file_count][2].append(line[2])
+                data_air[file_count][3].append(line[3])
+                data_air[file_count][4].append(line[4])
+                data_air[file_count][5].append(line[5])
+                data_air[file_count][6].append(line[6])
+                data_air[file_count][7].append(line[7])
+                data_air[file_count][10].append(line[10])
             elif line != []:
-                data_glass[file_count][0].append([line[0]])
-                data_glass[file_count][1].append([line[1]])
-                data_glass[file_count][2].append([line[2]])
-                data_glass[file_count][3].append([line[3]])
-                data_glass[file_count][4].append([line[4]])
-                data_glass[file_count][5].append([line[5]])
-                data_glass[file_count][6].append([line[6]])
-                data_glass[file_count][7].append([line[7]])
-                data_glass[file_count][10].append([line[10]])
+                data_glass[file_count][0].append(line[0])
+                data_glass[file_count][1].append(line[1])
+                data_glass[file_count][2].append(line[2])
+                data_glass[file_count][3].append(line[3])
+                data_glass[file_count][4].append(line[4])
+                data_glass[file_count][5].append(line[5])
+                data_glass[file_count][6].append(line[6])
+                data_glass[file_count][7].append(line[7])
+                data_glass[file_count][10].append(line[10])
     file_count += 1
+
+# Have the data, now clean it up! 0 is Glass-Air, 1 is Air-Glass
+# Everything above 50 is mV, below is V when reading in data
+# [0,1,2,3,4,5] are voltage measurements, [2,5] are background
+# [6 is glass theta, [7 is theta 2, for transmission theta, and [10 is theta 3, reflection
+
+
+
