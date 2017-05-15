@@ -1,5 +1,7 @@
 import os, csv
 from pprint import pprint
+import matplotlib.pyplot as plt
+
 data_air = []
 data_glass = []
 
@@ -71,88 +73,64 @@ def subtract_background(data_set):
             r_background += float(element)
     r_background /= count
 
-    # Data points daved will be in tuple (data, theta 1, [thea 2 if T, theta 3 if R])
-    for index, t_p_val in enumerate(data_set[0][0]):
-        #print(t_p_val)
-        if t_p_val != '':
-            current_point = float(t_p_val)
-            # Take care of V vs mV, change V to mV
-            if current_point <= 10.0:
-                current_point *= 1000
-        else:
-            current_point = 0.0
-
-        if current_point != 0.0:
-            # subtract the background
-            # Tb is [2]
-            if current_point >= t_background:
-                current_point -= t_background
+    def _convert(volt_index, background, second_theta_val, array_to_use):
+        # Data points daved will be in tuple (data, theta 1, [thea 2 if T, theta 3 if R])
+        for index, r_s_val in enumerate(data_set[0][volt_index]):
+            #print(t_p_val)
+            if r_s_val != '':
+                current_point = float(r_s_val)
+                # Take care of V vs mV, change V to mV
+                if current_point <= 10.0:
+                    current_point *= 1000
             else:
                 current_point = 0.0
 
-        t_p.append((current_point, float(data_set[0][6][index]), float(data_set[0][7][index])))
+            if current_point != 0.0:
+                # subtract the background
+                # Tb is [2]
+                if current_point >= background:
+                    current_point -= background
+                else:
+                    current_point = 0.0
 
-    # Data points daved will be in tuple (data, theta 1, [thea 2 if T, theta 3 if R])
-    for index, t_s_val in enumerate(data_set[0][1]):
-        #print(t_p_val)
-        if t_s_val != '':
-            current_point = float(t_s_val)
-            # Take care of V vs mV, change V to mV
-            if current_point <= 10.0:
-                current_point *= 1000
-        else:
-            current_point = 0.0
+            try:
+                second_theta = float(data_set[0][second_theta_val][index])
+                if second_theta < 0.0:
+                    second_theta = 360.0 - second_theta
+            except:
+                second_theta = 999
 
-        if current_point != 0.0:
-            # subtract the background
-            # Tb is [2]
-            if current_point >= t_background:
-                current_point -= t_background
-            else:
-                current_point = 0.0
+            print("Theta 1")
+            print(float(data_set[0][6][index]))
 
-        t_s.append((current_point, float(data_set[0][6][index]), float(data_set[0][7][index])))
+            array_to_use.append((current_point, float(data_set[0][6][index]), second_theta))
 
-    # Data points daved will be in tuple (data, theta 1, [thea 2 if T, theta 3 if R])
-    for index, r_p_val in enumerate(data_set[0][3]):
-        #print(t_p_val)
-        if r_p_val != '':
-            current_point = float(r_p_val)
-            # Take care of V vs mV, change V to mV
-            if current_point <= 10.0:
-                current_point *= 1000
-        else:
-            current_point = 0.0
+    _convert(0, t_background, 7, t_p)
+    _convert(1, t_background, 7, t_s)
+    _convert(3, r_background, 10, r_p)
+    _convert(4, r_background, 10, r_s)
 
-        if current_point != 0.0:
-            # subtract the background
-            # Tb is [2]
-            if current_point >= r_background:
-                current_point -= r_background
-            else:
-                current_point = 0.0
+    return t_p, t_s, r_p, r_s
 
-        r_p.append((current_point, float(data_set[0][6][index]), float(data_set[0][10][index])))
+glass_t_p, glass_t_s, glass_r_p, glass_r_s = subtract_background(data_glass)
+air_t_p, air_t_s, air_r_p, air_r_s = subtract_background(data_air)
 
-    # Data points daved will be in tuple (data, theta 1, [thea 2 if T, theta 3 if R])
-    for index, r_s_val in enumerate(data_set[0][0]):
-        #print(t_p_val)
-        if r_s_val != '':
-            current_point = float(r_s_val)
-            # Take care of V vs mV, change V to mV
-            if current_point <= 10.0:
-                current_point *= 1000
-        else:
-            current_point = 0.0
+# Now start graphing: (R/T vs Theta 1, or all vs the angle)
 
-        if current_point != 0.0:
-            # subtract the background
-            # Tb is [2]
-            if current_point >= r_background:
-                current_point -= r_background
-            else:
-                current_point = 0.0
+def plot_vs_angle(tuples):
+    angle = []
+    value = []
+    for element in tuples:
+        print("Theta 1")
+        print(element[1])
+        value.append(element[0])
+        angle.append(element[1])
+    plt.scatter(angle, value)
 
-        t_p.append((current_point, float(data_set[0][6][index]), float(data_set[0][7][index])))
-
-subtract_background(data_glass)
+#plot_vs_angle(glass_r_p)
+#plot_vs_angle(glass_r_s)
+plot_vs_angle(glass_t_p)
+#plot_vs_angle(glass_t_s)
+plt.ylabel("R/T")
+plt.xlabel("Theta 1")
+plt.show()
